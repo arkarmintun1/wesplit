@@ -16,10 +16,11 @@ struct ContentView: View {
     let tipPercentages = [10, 15, 20, 25, 0]
     
     var totalPerPerson: Double {
-        let peopleCount = Double(numberOfPeople)
-        let tipSelection = Double(tipPercentage)
-        
-        return (checkAmount + (checkAmount / 100.0 * tipSelection)) / peopleCount
+        return (checkAmount + (checkAmount / 100.0 * Double(tipPercentage))) / Double(numberOfPeople)
+    }
+    
+    var totalCheck: Double {
+        return checkAmount + (checkAmount / 100.0 * Double(tipPercentage))
     }
     
     var body: some View {
@@ -39,17 +40,27 @@ struct ContentView: View {
                             Text("\($0) people")
                         }
                     }
+                    .pickerStyle(.navigationLink)
                 }
                 
                 Section {
                     Picker("Tip percentage", selection: $tipPercentage) {
-                        ForEach(tipPercentages, id: \.self) {
+                        ForEach(0..<100, id: \.self) {
                             Text($0, format: .percent)
                         }
                     }
-                    .pickerStyle(.segmented)
+                    .pickerStyle(.navigationLink)
                 } header: {
                     Text("How much tip do you want to leave?")
+                }
+                
+                Section {
+                    Text(
+                        totalCheck,
+                        format: .currency(code: Locale.current.currency?.identifier ?? "USD")
+                    )
+                } header: {
+                    Text("Total check")
                 }
                 
                 Section {
@@ -57,6 +68,8 @@ struct ContentView: View {
                         totalPerPerson,
                         format: .currency(code: Locale.current.currency?.identifier ?? "USD")
                     )
+                } header: {
+                    Text("Amount per person")
                 }
             }
             .navigationTitle("WeSplit")
